@@ -9,7 +9,7 @@ Authentication succeded
 
 ### **`[fbac@localhost ~]$ cat about.md`**
 
-Hello, there!
+Hello, there! :wave:
 
 My name is **Borja**, and I grew up surrounded by computers. Eventually I fell in love with development and opensource development.
 
@@ -63,37 +63,6 @@ skills:
     ci/cd:
         githubActions: true
         jenkins: true
-
-
-apiVersion: ocs.openshift.io/v1
-kind: StorageCluster
-metadata:
-  annotations:
-    cluster.ocs.openshift.io/local-devices: "true"
-    uninstall.ocs.openshift.io/cleanup-policy: delete
-    uninstall.ocs.openshift.io/mode: graceful
-  name: ocs-storagecluster
-  namespace: openshift-storage
-spec:
-  manageNodes: false
-  monDataDirHostPath: /var/lib/rook
-  storageDeviceSets:
-  - count: $CHANGEME_STORAGE_DEVICE_SET_COUNT
-    dataPVCTemplate:
-      spec:
-        accessModes:
-        - ReadWriteOnce
-        resources:
-          requests:
-            storage: 50Gi
-        storageClassName: localstorage-sc-block
-        volumeMode: Block
-    name: ocs-deviceset
-    placement: {}
-    portable: False
-    replica: 1
-    resources: {}
-
 ```
 
 ### **`[fbac@localhost ~]$ cat hobbies.md`**
@@ -112,7 +81,7 @@ I can be contacted at [me@fbac.dev](mailto:me@fbac.dev)
 
 Feel free to reach me to say hello. I'm always eager to participate and contribute in new projects!
 
-Also, I'm active in:
+Also, I'm active in:V
 
 - ![Github](images/github.ico "Github") [Github](https://github.com/fbac)
 - ![Linkedin](images/linkedin.ico "Linkedin") [Linkedin](https://www.linkedin.com/in/fbac/)
