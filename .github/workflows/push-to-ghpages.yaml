@@ -1,0 +1,23 @@
+name: Push to gh-pages
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Set up Python
+        uses: actions/checkout@v3
+
+      - name: Publish to gh-pages
+        uses: peaceiris/actions-gh-pages@v3.6.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          force_orphan: true
+          user_name: fbac
+          user_email: me@fbac.dev
+          cname: fbac.dev
