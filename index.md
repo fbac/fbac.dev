@@ -1,37 +1,123 @@
-## Welcome to GitHub Pages
+# [fbac.dev](https://github.com/fbac)
 
-You can use the [editor on GitHub](https://github.com/fbac/fbac.dev/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+## **`[guest@localhost /]$ su - fbac`**
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+```bash
+Password: **********
+Authentication succeded!
 ```
 
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
+### **`[fbac@localhost ~]$ cat about.md`**
 
-### Jekyll Themes
+Hello, there! :wave:
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/fbac/fbac.dev/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+My name is **Borja**, and I grew up surrounded by computers. The first OS I used was MS-DOS as kid, in a really old Olivetti M380 XP3 80386. I loved since the very beggining changing batch and system files, just to see _what would happen if I change this thing I don't event understand_. Those were fun times for my father.
 
-### Support or Contact
+Eventually I fell in love with operating systems and opensource development.
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+Nowadays, my key expertise areas are Red Hat OpenShift, Kubernetes, programming and automation & CI/CD. And I still love kernel and networking problems, as debugging complex low-level stuff is my main passion.
+
+My current role is **Principal Software Engineer**@**Red Hat**, where I'm mainly focused in the architecture and developing of software pieces focused in OpenShift, Kubernetes, container runtimes, bugfixing and contributing in whatever project I stumble upon.
+
+... I guess I just perform some software engineer stuff.
+
+### **`[fbac@localhost ~]$ cat skills.yaml`**
+
+```yaml
+apiVersion: v1
+kind: Person
+metadata:
+  name: Borja
+  role: Open Source Software Engineer
+skills:
+  gnu/linux:
+    kernel:
+      skillLevel: high
+      interestLevel: high
+      knowledgeIn:
+      - lowLevelDebugging
+      - developingModules
+    operating-system:
+      skillLevel: high
+      interestLevel: high
+      knowledgeIn:
+      - installing
+      - configuring
+      - managing
+      - shellScripting
+  networking:
+    skillLevel: medium
+    interestLevel: high
+    knowledgeIn:
+      tcp/ip: true
+      knowledge:
+      - routing
+      - switching
+      - netfilter
+      - iptables
+      debugging:
+        wireshark: true
+        tshark: true
+  openShift-and-kubernetes:
+    skillLevel: high
+    interestLevel: high
+    knowledgeIn:
+    - installing
+    - configuring
+    - day2operations
+    - migratingWorkloads
+    - automatingWorkloads
+    - CI/CD
+  programmingLanguages:
+    skillLevel: high
+    interestLevel: high
+    languages:
+      current: [go, python]
+      used: [c, java]
+      interestedIn: rust
+    debugging:
+      debuggers: true
+      compilers: true
+  automation:
+    skillLevel: medium
+    interestLevel: medium
+    tools:
+      ansible: true
+      puppet: true
+  ci/cd:
+    skillLevel: medium
+    interestLevel: medium
+    tools:
+      githubActions: true
+      jenkins: true
+  otherSkills: 
+  - "strong development workflow skills"
+  - "team-player who loves interesting discussions and multiple opinions"
+  - "fast and *REALLY AVID* learner"
+  - "curious by nature, constantly reading and learning"
+  - "self-improvement as a way of life"
+```
+
+### **`[fbac@localhost ~]$ cat hobbies.md`**
+
+In my free time I like to...
+
+- Spend time with my **wife**, **son** and **family** is my **key priority**!
+- **Healthy living**: gym rat, meditation, hiking and dieting with a goal in mind.
+- **Board games**: wargaming, strategy, horror or dungeon crawlers... I'm just addicted to them all.
+- **Video games**: currently playing **Dead Cells**.
+- **Learning** and **hacking**: I just can't stop and whenever I have some free time I continue my learning process. Currently learning **Rust**.
+
+### **`[fbac@localhost ~]$ cat contact.md`**
+
+I can be contacted at [me@fbac.dev](mailto:me@fbac.dev)
+
+Feel free to reach me to say hello. I'm always eager to participate and contribute in new projects!
+
+Also, I'm active in:
+
+- ![Github](images/github.ico "Github") [Github](https://github.com/fbac)
+- ![Linkedin](images/linkedin.ico "Linkedin") [Linkedin](https://www.linkedin.com/in/fbac/)
+- ![Twitter](images/twitter.ico "Twitter") [Twitter](https://twitter.com/0xfbac)
+
+### **`[fbac@localhost ~]$ logout`**
