@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>fbac.dev</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="/css/writ.min.css">
+<link rel="stylesheet" href="/css/style.css" type="text/css" media="all" />
+
+  </head>
+<body data-route=docs>
+  <nav class="menu">
+  <a class="menu-item " href="/about">fbac</a>
+  <a class="menu-item current" href="/docs">docs</a>
+  <a class="menu-item icon" href="http://github.com/fbac"><i class="fa fa-github-square"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/0xfbac"><i class="fa fa-twitter-square"></i></a>
+  <a class="menu-item icon" href="https://www.linkedin.com/in/fbac/"><i class="fa fa-linkedin-square"></i></a>
+  <a class="menu-item icon" href="mailto:me@fbac.dev"><i class="fa fa-envelope-square"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <h1>ceph</h1>
+<p>ceph docs: https://access.redhat.com/documentation/en-us/red_hat_ceph_storage/3/
+lifecycle: https://access.redhat.com/articles/1372203
+upstream docs: http://docs.ceph.com/docs/luminous/
+supported configurations: https://access.redhat.com/articles/1548993</p>
+<h2>architecture</h2>
+<ul>
+<li>
+<p><strong>Monitors (MONs)</strong></p>
+<ul>
+<li>Maintain maps of the cluster state and are used to help the other daemons coordinate with each other.</li>
+<li>The cluster map is a collection of six maps which contain information about the state of the Ceph cluster and its configuration.</li>
+<li>Monitors provide consensus for distributed decision making. The cluster must be configured with an odd number of monitors.</li>
+<li>If more than the half of monitors are down, the entire cluster will become inaccessible to all clients. This is necessary to protect the integrity of the cluster's data.</li>
+</ul>
+</li>
+<li>
+<p><strong>Object Storage Devices (OSDs)</strong>, which store data and handle data replication, recovery and rebalancing.</p>
+<ul>
+<li>
+<p>OSDs connect a storage device (such as a hard disk or other block device) to the Ceph storage cluster.</p>
+</li>
+<li>
+<p>An individual storage server may run multiple OSD daemons and provide multiple OSDs to the cluster.</p>
+</li>
+<li>
+<p>Ceph currently only supports XFS file systems. Extended Attributes (xattrs) are used to store information about the internal object state, snapshot metadata, and Ceph RADOS Gateway Access Control Lists (ACLs). Extended attributes are enabled by default on XFS file systems.</p>
+</li>
+<li>
+<p>CRUSH algorithm is used to store objects in OSDs (using placement groups)</p>
+</li>
+<li>
+<p>The replication of objects to multiple OSDs is handled automatically. One OSD is the primary OSD for the object's placement group, and Ceph clients always contact the primary OSD in the acting set when it reads or writes data:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#c0c5ce;">Primary OSD functions:
+</span><span style="color:#c0c5ce;">    Serves all I/O requests
+</span><span style="color:#c0c5ce;">    Replicates and protects the data
+</span><span style="color:#c0c5ce;">    Checks the coherence of the data
+</span><span style="color:#c0c5ce;">    Rebalances the data
+</span><span style="color:#c0c5ce;">    Recovers the data
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">Secondary OSD functions:
+</span><span style="color:#c0c5ce;">    Always acts under control of the primary OSD
+</span><span style="color:#c0c5ce;">    Capable of becoming the primary OSD
+</span></pre></li>
+<li>
+<p>Each OSD has its own OSD journal. Writes from Ceph clients, often random I/O in nature, are written sequentially by the OSD daemon to its journal.</p>
+</li>
+<li>
+<p>OSD journals use raw volumes on the OSD nodes, and should be configured on a separate device, if possible a fast device such as an SSD, for performance-oriented and/or write-intensive environments.</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Managers (MGRs)</strong>, which keep track of runtime metrics and expose cluster information through a web browser-based dashboard and REST API.</p>
+</li>
+<li>
+<p><strong>Metadata Servers (MDSs)</strong></p>
+<ul>
+<li>Provides POSIX-compliant, shared file system metadata management, which supports both directory hierarchy and file metadata, including ownership, time stamps, and mode.</li>
+<li>MDS uses RADOS instead of local storage to store metadata, and has no access to file content, because it is only required for file access. The MDS is therefore a Ceph component but not a RADOS component.</li>
+<li>The MDS enables CephFS to interact with the Ceph Object Store, mapping an inode to an object, and remembering where data is stored within a tree. Clients accessing a CephFS file system first make a request to an MDS, which provides the information needed to get files from the correct OSDs.</li>
+</ul>
+</li>
+</ul>
+<h2>Data Distribution and Organization in Ceph</h2>
+<h3>Pools</h3>
+<p>Pools are logical partitions of the Ceph storage cluster, used to store objects under a common name tag. Each pool is assigned a specific number of hash buckets to group objects together for storage. These hash buckets are called Placement Groups (PGs)
+The number of placement groups configured when the pool is created can be increased dynamically, but can never be decreased.
+The CRUSH algorithm is used to select the OSDs hosting the data for a pool. Each pool is assigned a single CRUSH rule for its placement strategy. The CRUSH rule determines which OSDs store the data for all the pools assigned that rule.
+A pool name must be specified for each request and permissions are granted for each Ceph user, either to all the pools in the cluster or to one or more specific pools. These permissions can be read, write, or execute.</p>
+<h3>Placement Groups</h3>
+<p>A Placement Group (PG) aggregates a series of objects into a hash bucket, or group, and is mapped to a set of OSDs. An object belongs to only one PG, and all objects belonging to the same PG return the same hash result.</p>
+<p>An object is mapped to its PG by the CRUSH algorithm based on the hashing of the object's name. The placement strategy is known as the CRUSH placement rule. The placement rule identifies the failure domain that is to be chosen within the CRUSH topology to receive each replica or erasure code chunk.</p>
+<p>When a client writes an object to a pool, it uses the pool's CRUSH placement rule to determine the object's placement group. The client then uses its copy of the cluster map, the placement group, and the CRUSH placement rule to calculate to which OSDs a copy of the object (or its erasure-coded chunks) should be written.</p>
+<p>The layer of indirection provided by the placement group is important when new OSDs become available to the Ceph cluster. When OSDs are added to or removed from a cluster, placement groups are automatically rebalanced between operational OSDs.</p>
+<h3>Mapping an Object to Its Associated OSDs</h3>
+<p>A Ceph client gets the latest copy of the cluster map from a monitor. This tells it about all the MONs, OSDs, and MDSs in the cluster. This does not tell it where objects are stored; the client must use CRUSH to compute the location of objects it needs to access.</p>
+<p>To calculate the Placement Group ID (PG ID) for an object, the Ceph client needs the object ID and the name of the object's storage pool. The client hashes the object ID, and then calculates the hash modulo the number of PGs to get a PG ID. It then looks up the numeric ID for the pool, based on the pool's name, and prepends the pool ID to the PG ID.</p>
+<p>The CRUSH algorithm is then used to determine which OSDs are responsible for a placement group (the Acting Set ). The OSDs in the Acting Set that are currently up are in the Up Set . The first OSD in the Up Set is the current primary OSD for the object's placement group, and all other OSDs in the Up Set are secondary OSDs.</p>
+<p>The Ceph client can then directly work with the primary OSD in order to access the object.</p>
+<h2>Operating Ceph</h2>
+<h3>Deploy</h3>
+<p>deploy: /usr/share/ceph-ansible/site.yml
+variables: /usr/share/ceph-ansible/group_vars</p>
+<ul>
+<li>Configure ssh-keys:</li>
+</ul>
+<pre style="background-color:#2b303b;">
+<span style="color:#8fa1b3;">ssh-keygen
+</span><span style="color:#b48ead;">for</span><span style="color:#c0c5ce;"> i </span><span style="color:#b48ead;">in</span><span style="color:#c0c5ce;"> a b c d e&gt; do&gt; ssh-copy-id student@server$</span><span style="color:#bf616a;">i</span><span style="color:#c0c5ce;">&gt; ssh-copy-id ceph@server$</span><span style="color:#bf616a;">i</span><span style="color:#c0c5ce;">&gt; done
+</span></pre>
+<ul>
+<li>
+<p>Deployment:</p>
+<ul>
+<li>
+<p>Configure /etc/ansible/hosts with [mons] and [mgrs]</p>
+</li>
+<li>
+<p>Configure /usr/share/ceph-ansible/group_vars/all.yaml using sample</p>
+</li>
+<li>
+<p>Configure /usr/share/ceph-ansible/site.yaml using sample</p>
+</li>
+<li>
+<p>Run ansible-playbook site.yaml to deploy mgrs and mons</p>
+</li>
+<li>
+<p>Configure /usr/share/ceph-ansible/group_vars/osds.yml using sample</p>
+</li>
+<li>
+<p>Configure /etc/ansible/hosts with [osds]</p>
+</li>
+<li>
+<p>Run ansible-playbook site.yaml to deploy osds</p>
+</li>
+<li>
+<p>Configure /usr/share/ceph-ansible/clients.yml using sample</p>
+</li>
+<li>
+<p>Configure /etc/ansible/hosts with [clients]</p>
+</li>
+<li>
+<p>Run ansible-playbook --limits=clients site.yaml to deploy osds</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Basic operations:</p>
+</li>
+</ul>
+<pre style="background-color:#2b303b;">
+<span style="color:#8fa1b3;">sudo</span><span style="color:#c0c5ce;"> systemctl start/stop ceph.target|</span><span style="color:#8fa1b3;">ceph-mon.target</span><span style="color:#c0c5ce;">|</span><span style="color:#8fa1b3;">ceph-osd.target</span><span style="color:#c0c5ce;">|</span><span style="color:#8fa1b3;">ceph-mgr.target
+</span></pre>
+<h3>Expand</h3>
+<ul>
+<li>
+<p>Add additional osds servers:</p>
+<ul>
+<li>Add new hosts in the [osds] group in the inventory</li>
+<li>Run ansible-playbook site.yml</li>
+</ul>
+</li>
+<li>
+<p>Add additional disks to existing osd servers</p>
+<ul>
+<li>Add new disks in &quot;devices&quot; inside /usr/share/ceph-ansible/group_vars/osds.yml</li>
+<li>Run ansible-playbook site.yml</li>
+</ul>
+</li>
+</ul>
+<h3>Deploy N ceph cluster</h3>
+<p>Copy /usr/share/ceph-ansible to another location and configure ansible.cfg to point to another hosts file.</p>
+<h2>Creating replicated pools</h2>
+<p>https://role.rhu.redhat.com/rol-rhu/app/courses/ceph125-3.0/pages/ch03</p>
+<h3>Create</h3>
+<p>ceph osd pool create pool-name pg-num [pgp-num]  &gt; [replicated] [crush-ruleset-name] [expected-num-objects]</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#c0c5ce;">pool-name is the name of the new pool.
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">pg-num is the total number of Placement Groups (PGs) for this pool.
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">pgp-num is the effective number of placement groups for this pool. Normally, this should be equal to the total number of placement groups.
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">replicated specifies that this is a replicated pool, and is normally the default if not included in the command.
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">crush-ruleset-name is the name of the CRUSH rule set you want to use for this pool. The osd_pool_default_crush_replicated_ruleset configuration parameter sets the default value.
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">expected-num-objects is the expected number of objects in the pool. If you know this number in advance, Ceph can prepare a folder structure on the OSD&#39;s XFS file system at pool creation time. Otherwise, Ceph reorganizes this directory s
+</span><span style="color:#c0c5ce;">structure at runtime as the number of objects increases. This reorganization has a latency impact.
+</span></pre>
+<p>ceph osd pool set pool-name size number-of-replicas</p>
+<h3>Manage Ceph</h3>
+<h4>Set pool type</h4>
+<p>After creating a pool, administrators must explicitly indicate the type of Ceph applications that will be able to use it.</p>
+<p>ceph osd pool application enable pool-nameapp</p>
+<p>Where app is:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#c0c5ce;">cephfs for the Ceph File System.
+</span><span style="color:#c0c5ce;">rbd for the Ceph Block Device.
+</span><span style="color:#c0c5ce;">rgw for the Ceph Object Gateway. 
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">ceph osd pool application enable myfirstpool rbd
+</span></pre>
+<h4>List pools</h4>
+<p>ceph osd lspools
+ceph osd pool ls detail</p>
+<h4>Statistics</h4>
+<p>ceph df
+ceph osd pool stats</p>
+<p>The ceph df command displays pool usage statistics. The ceph osd df command displays disk usage statistics on OSDs.</p>
+<h4>Pool quotas</h4>
+<p>ceph osd pool set-quota pool-name max_objects obj-count max_bytes bytes</p>
+<p>For example, to limit the myfirstpool pool to 1000 objects, use the following command:
+$ ceph osd pool set-quota myfirstpool max_objects 1000</p>
+<p>You can remove a quota by setting its value to 0. Remember that you can review the usage statics of the pools with the ceph osd df command.</p>
+<h4>Rename</h4>
+<p>ceph osd pool rename current-name new-name</p>
+<h4>Snapshot</h4>
+<ul>
+<li>Create or delete:</li>
+</ul>
+<p>ceph osd pool mksnap pool-name snap-name
+ceph osd pool rmsnap pool-name snap-name</p>
+<ul>
+<li>Use:</li>
+</ul>
+<p>rados -p pool-name -s snap-name get object-namefile
+rados -p pool-name rollback object-name snap-name
+rados --id name -p pool -N namespace put name /locla/file/path</p>
+<h4>Modify pools</h4>
+<ul>
+<li>
+<p>Set
+ceph osd pool set pool-nameparametervalue</p>
+</li>
+<li>
+<p>Get
+ceph osd pool get pool-nameparameter</p>
+</li>
+<li>
+<p>List
+ceph osd pool get pool-name all</p>
+</li>
+</ul>
+<h4>Delete pool</h4>
+<ul>
+<li>
+<p>Delete
+ceph osd pool delete pool-namepool-name --yes-i-really-really-mean-it</p>
+</li>
+<li>
+<p>Protect a pool</p>
+</li>
+</ul>
+<p>In Red Hat Ceph Storage 3, for extra protection, Ceph sets the mon_allow_pool_delete configuration parameter to false . With this directive, and even with the --yes-i-really-really-mean-it option, the ceph osd pool delete command does not result in the deletion of the pool.</p>
+<p>You can set the mon_allow_pool_delete parameter to true and restart the mon services to allow pool deletion.</p>
+<p>But even with mon_allow_pool_delete set to true you can still protect your pool from deletion by setting the nodelete option to true at the pool level:</p>
+<p>ceph osd pool set pool-name nodelete true</p>
+<h4>Configuring Namespaces in a Pool</h4>
+<p>A namespace is a logical group of objects in a pool. A user's access to a pool can be limited so that the user can only store or retrieve objects in that namespace.</p>
+<p>By default, each pool contains a namespace with an empty name, known as the default namespace. Consult the Ceph API documentation for instructions on how to pass both the pool and namespace parameters at http://docs.ceph.com/docs/luminous/rados/api/librados/</p>
+<ul>
+<li>
+<p>Put in a namespace
+$ rados -p mytestpool -N system put srv /etc/services</p>
+</li>
+<li>
+<p>List a namespace
+$ rados -p mytestpool -N system ls</p>
+</li>
+<li>
+<p>List all namespaces
+$ rados -p mytestpool --all ls
+$ rados -p mytestpool --all ls --format=json | python -m json.tool</p>
+</li>
+</ul>
+<h3>Erasure Coding Pools</h3>
+<p>When you store an object in an erasure coded pool, the object is divided into a number of data chunks, and the data chunks are stored in separate OSDs. In addition, a number of coding chunks are calculated based on the data chunks, and are also stored in different OSDs. The coding chunks can be used to reconstruct the object's data if an OSD containing a chunk fails.</p>
+<h4>Create</h4>
+<p>ceph osd pool create pool-namepg-num [pgp-num] erasure [erasure-code-profile] [crush-ruleset-name] [expected_num_objects]
+ceph osd pool create mysecondpool 50 50 erasure</p>
+<h4>Get erasure profile</h4>
+<p>ceph osd erasure-code-profile get default</p>
+<h4>Set new erasure profile</h4>
+<p>ceph osd erasure-code-profile set profile-name arguments...</p>
+<p>For example, the following command creates a profile that divides objects into three data chunks ( k=3 ) and protects them with two coding chunks ( m=2 ). The crush-failure-domain=rack parameter ensures that Ceph will not store two chunks in the same rack.</p>
+<p>ceph osd erasure-code-profile set myprofile k=3 m=2 crush-failure-domain=rack</p>
+<h4>List</h4>
+<p>ceph osd erasure-code-profile ls</p>
+<h4>Remove</h4>
+<p>ceph osd erasure-code-profile rm profile-name</p>
+<h4>View</h4>
+<p>ceph osd erasure-code-profile get profile-name</p>
+<h3>Configuration</h3>
+<h4>View config</h4>
+<p>ceph daemon type.id config show
+ceph daemon osd.0 config show</p>
+<p>ceph daemon type.id config get parameter
+ceph daemon mds.servera config get mds_data</p>
+<h4>Managing the Ceph Configuration File with Ansible</h4>
+<ul>
+<li>In the /usr/share/ceph-ansible/group_vars/all.yml variable file, edit the ceph_conf_overrides.</li>
+<li>Run the ansible-playbook site.yml</li>
+</ul>
+<h4>Starting and stopping Ceph daemons</h4>
+<p>Stop a specific daemon
+systemctl stop ceph- $type @ $id
+Stop all OSD daemons
+systemctl stop ceph-osd.target
+Stop all daemons
+systemctl stop ceph.target
+Start a specific daemon
+systemctl start ceph- $type @ $id
+Start all OSD daemons
+systemctl start ceph-osd.target
+Start all daemons
+systemctl start ceph.target
+Restart a specific daemon
+systemctl restart ceph- $type @ $id
+Restart all OSD daemons
+systemctl restart ceph-osd.target
+Restart all daemons
+systemctl restart ceph.target</p>
+<h3>Managing Ceph Authentication</h3>
+<p>https://role.rhu.redhat.com/rol-rhu/app/courses/ceph125-3.0/pages/ch03s07</p>
+<h4>Authentication with Cephx</h4>
+<p>In a Red Hat Ceph Storage cluster, users are used to authorize communication between clients, applications, and daemons in the cluster. To securely authenticate these users, Ceph uses the cephx authentication protocol, based on shared secret keys.</p>
+<p>Accounts used by Ceph daemons have names that match the associated daemon: osd.1 or mgr.serverc.
+Accounts used by client applications using librados have names that start with client.</p>
+<p>$ ceph --id operator3 osd lspools</p>
+<h4>Authorization with Cephx</h4>
+<p>When you create a new user account, you need to grant it permissions to control what that user is authorized to do in the Red Hat Ceph Storage cluster. Permissions within cephx are known as capabilities , and you grant them by daemon type ( mon , osd , mgr , or mds ).</p>
+<ul>
+<li><strong>Cephx Capabilities</strong></li>
+</ul>
+<p>Within cephx , and for each daemon type, several capabilities are available:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#c0c5ce;">r grants read access. Each user account should have at least read access on the Monitors to be able to retrieve the CRUSH map.
+</span><span style="color:#c0c5ce;">w grants write access. Clients need write access to store and modify objects on OSDs. For Managers (MGRs), w grants the right to enable or disable modules.
+</span><span style="color:#c0c5ce;">x grants authorization to execute extended object classes. This allows clients to perform extra operations on objects such as setting locks with rados lock get or listing RBD images with rbd list .
+</span><span style="color:#c0c5ce;">* grants full access.
+</span><span style="color:#c0c5ce;">class-read and class-write are subsets of x . You mostly use them on pools used for RBD. 
+</span></pre>
+<p>For example, the following command creates the formyapp1 user account, and gives it the capability to store and retrieve objects from any pool:</p>
+<p>$ ceph auth get-or-create client.formyapp1 mon 'allow r' osd 'allow rw'</p>
+<ul>
+<li><strong>Using Profiles to Set Capabilities</strong></li>
+</ul>
+<p>cephx offers predefined capability profiles.</p>
+<p>$ ceph auth get-or-create client.forrbd mon 'profile rbd' osd 'profile rbd'</p>
+<ul>
+<li><strong>Restricting Access</strong></li>
+</ul>
+<p>You should restrict user OSD permissions such that users can only access the pools they need. The following command creates the formyapp2 user and limits their access to read and write on the myapp pool:</p>
+<p>$ ceph auth get-or-create client.formyapp2 &gt; mon 'allow r' &gt; osd 'allow rw pool=myapp'</p>
+<p>cephx can also restrict access to objects by other means:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#c0c5ce;">By object name prefix
+</span><span style="color:#c0c5ce;">  $ ceph auth get-or-create client.formyapp3 \&gt; mon &#39;allow r&#39; \&gt; osd &#39;allow rw object_prefix pref&#39;
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">By namespace
+</span><span style="color:#c0c5ce;">  $ ceph auth get-or-create client.designer \&gt; mon &#39;allow r&#39; \&gt; osd &#39;allow rw namespace=photos&#39;
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">By path (CephFS)
+</span><span style="color:#c0c5ce;">  $ ceph fs authorize cephfs client.webdesigner  /webcontent rw
+</span><span style="color:#c0c5ce;">  $ ceph auth get client.webdesigner
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">By Monitor command . This method restricts administrators to a specific list of commands. The following example creates the operator1 user account and limits its access to two commands:
+</span><span style="color:#c0c5ce;">  $ ceph auth get-or-create client.operator1 mon &#39;allow r, allow command &quot;auth get-or-create&quot;, allow command &quot;auth list&quot;&#39;
+</span></pre>
+<h3>User Management</h3>
+<ul>
+<li>
+<p>List users
+$ ceph auth list</p>
+</li>
+<li>
+<p>Details of an account
+$ ceph auth get client.admin</p>
+</li>
+<li>
+<p>Print secret key
+$ ceph auth print-key client.admin</p>
+</li>
+<li>
+<p>Import/export
+$ ceph auth export client.operator1 &gt; ~/operator1.export
+$ ceph auth import -i ~/operator1.export</p>
+</li>
+</ul>
+<h4>Creating New User Accounts</h4>
+<p>$ ceph auth get-or-create client.application1 mon 'allow r' osd 'allow rw' -o /etc/ceph/ceph.client.application1.keyring</p>
+<h4>Modifying User Capabilities</h4>
+<p>$ ceph auth caps client.application1 mon 'allow r' osd 'allow rw pool=myapp'
+$ ceph auth caps client.application1 osd '' (remove)</p>
+<h4>Delete user</h4>
+<p>$ ceph auth del client.application1</p>
+<h2>rbd</h2>
+<h3>create pool and user</h3>
+<ul>
+<li>
+<p>Create pool, user and initialize
+ceph osd pool create rbd 32 32
+rbd pool init rbd
+ceph auth get-or-create client.rbd.servera mon 'profile rbd' osd 'profile rbd' -o /etc/ceph/ceph.client.rbd.servera.keyring</p>
+</li>
+<li>
+<p>Use in servera with:
+export CEPH_ARGS='--id=rbd.servera'</p>
+</li>
+<li>
+<p>Create rbd and list
+rbd create rbd/test --size=128M
+rbd ls</p>
+</li>
+<li>
+<p>Map to the kernel
+sudo rbd --id rbd.servera map rbd/test
+/dev/rbd0</p>
+</li>
+<li>
+<p>Show
+rbd showmapped
+id pool image snap device
+0  rbd  test  -    /dev/rbd0</p>
+</li>
+<li>
+<p>Mount
+sudo mkfs.ext4 /dev/rbd0
+sudo mkdir /mnt/rbd
+sudo mount /dev/rbd0 /mnt/rbd
+sudo chown ceph:ceph /mnt/rbd</p>
+</li>
+<li>
+<p>Add some file
+dd if=/dev/zero of=/tmp/testrbd bs=10M count=1
+cp /tmp/testrbd /mnt/rbd/test1
+df / ceph df</p>
+</li>
+<li>
+<p>Clean
+sudo umount /mnt/rbd
+sudo rbd --id rbd.servera unmap /dev/rbd0
+rbd rm rbd/test
+rados -p rbd rm test</p>
+</li>
+</ul>
+<h3>Create a snapshot</h3>
+<ul>
+<li>
+<p>Create rbd, map it to the host and create a filesystem
+rbd create rbd/snaptest --size=128M
+sudo rbd --id rbd.servera map rbd/snaptest
+sudo mkfs.ext4 /dev/rbd0</p>
+</li>
+<li>
+<p>Take a snapshot
+rbd snap create rbd/snaptest@firstsnap</p>
+</li>
+<li>
+<p>Map the snapshot
+sudo rbd --id rbd.servera map rbd/snaptest@firstsnap</p>
+</li>
+<li>
+<p>Purge snapshots
+rbd snap purge rbd/snaptest</p>
+</li>
+<li>
+<p>Delete rbd
+rbd rm rbd/snaptest</p>
+</li>
+</ul>
+<h3>Cloning rbd</h3>
+<ul>
+<li>
+<p>Create rbd, map it, create filesystem and add content
+rbd create rbd/clonetest --size=128M
+sudo rbd --id rbd.servera map rbd/clonetest
+sudo mkfs.ext4 /dev/rbd0
+sudo mkdir /mnt/source
+sudo mount /dev/rbd0 /mnt/source
+sudo chown ceph:ceph /mnt/source
+dd if=/dev/zero of=/mnt/source/fileonsource bs=1M count=10</p>
+</li>
+<li>
+<p>Freeze the filesystem and take a snapshot
+sudo fsfreeze --freeze /mnt/source
+rbd snap create rbd/clonetest@clonesnap
+sudo fsfreeze --unfreeze /mnt/source</p>
+</li>
+<li>
+<p>Protect snapshot and take a clone from that snapshot
+rbd snap protect rbd/clonetest@clonesnap
+rbd clone rbd/clonetest@clonesnap rbd/realclone</p>
+</li>
+<li>
+<p>Map the clone as a normal rbd</p>
+</li>
+</ul>
+<h3>Export/Import</h3>
+<ul>
+<li>
+<p>Create pool with application rbd, init rbd
+ceph osd pool create rbd 32
+rbd pool init rbd</p>
+</li>
+<li>
+<p>Create rbd, map it to the node, mkfs it, mount and add content
+rbd create rbd/test --size=128M
+sudo rbd map rbd/test
+sudo mkfs.ext4 /dev/rbd0
+sudo mkdir /mnt/rbd
+sudo mount /dev/rbd0 /mnt/rbd
+sudo chown ceph:ceph /mnt/rbd
+cp /etc/ceph/ceph.conf /mnt/rbd/file0</p>
+</li>
+<li>
+<p>Export the rbd
+rbd export rbd/test ~/export.dat</p>
+</li>
+<li>
+<p>Import it in other server, then you can map it, mount, change...
+rbd import export.dat rbd/test</p>
+</li>
+<li>
+<p>Export with snapshots: create snapshots
+rbd snap create rbd/test@firstsnap
+rbd snap create rbd/test@secondsnap</p>
+</li>
+<li>
+<p>Export snapshots with export-diff
+rbd export-diff --from-snap firstsnap rbd/test@secondsnap - | ssh serverf rbd import-diff - rbd/test</p>
+</li>
+</ul>
+<h2>radosgw</h2>
+<ul>
+<li>
+<p>Deploy
+ansible-playbook site.yml --limit rgws</p>
+</li>
+<li>
+<p>Create user
+radosgw-admin user create --uid=&quot;operator&quot; --display-name=&quot;S3 Operator&quot; --email=&quot;operator@example.com&quot; --access_key=&quot;12345&quot; --secret=&quot;67890&quot;</p>
+</li>
+<li>
+<p>Create admin user
+radosgw-admin user create --uid=admin --display-name=&quot;Admin User&quot; --caps=&quot;users=read,write;usage=read,write;buckets=read,write;zone=read,write&quot; --access-key=&quot;abcde&quot; --secret=&quot;qwerty&quot;</p>
+</li>
+<li>
+<p>Configure s3cmd</p>
+</li>
+<li>
+<p>Create bucket
+s3cmd mb --acl-public s3://servera/my-bucket</p>
+</li>
+<li>
+<p>View bucket metadata
+radosgw-admin metadata get bucket:my-bucket</p>
+</li>
+</ul>
+<h2>cephfs</h2>
+<ul>
+<li>
+<p>Deploy
+ansible-playbook site.yml --limit mdss</p>
+</li>
+<li>
+<p>Mount
+ceph auth get-key client.admin | sudo tee /root/asecret
+sudo mount -t ceph serverc:/ /mnt/cephfs -o name=admin,secretfile=/root/asecret</p>
+</li>
+<li>
+<p>Snapshots
+sudo ceph mds set allow_new_snaps true --yes-i-really-mean-it
+sudo ceph mds set allow_new_snaps false</p>
+</li>
+</ul>
+
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a class="menu-item " href="https://fbac.dev">cd ~</a>
+  </p>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>
