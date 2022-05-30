@@ -27,6 +27,7 @@ ignore:
   - README.md
   - "build/*"
   - ".git/*"
+  - ".github/*"
 syntax_highlight:
   theme: "base16-ocean.dark"
 assets:
