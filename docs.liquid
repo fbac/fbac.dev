@@ -1,0 +1,16 @@
+---
+permalink: /docs
+title: fbac.dev
+layout: default.liquid
+data:
+  route: docs
+---
+<h1>/home/fbac/docs</h1>
+<h4>Personal documentation repository.</h4>
+<p>Section mainly used as an online braindump and quick reference cheatsheets I keep forgetting.</p>
+
+<ul>
+{% for post in collections.posts.pages %}
+  <li><a href="/{{ post.permalink }}">{{ post.description }}</a></li>
+{% endfor %}
+</ul>

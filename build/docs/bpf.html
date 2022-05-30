@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>fbac.dev</title>
+<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+<link rel="stylesheet" href="/css/writ.min.css">
+<link rel="stylesheet" href="/css/style.css" type="text/css" media="all" />
+
+  </head>
+<body data-route=docs>
+  <nav class="menu">
+  <a class="menu-item " href="/about">fbac</a>
+  <a class="menu-item current" href="/docs">docs</a>
+  <a class="menu-item icon" href="http://github.com/fbac"><i class="fa fa-github-square"></i></a>
+  <a class="menu-item icon" href="http://twitter.com/0xfbac"><i class="fa fa-twitter-square"></i></a>
+  <a class="menu-item icon" href="https://www.linkedin.com/in/fbac/"><i class="fa fa-linkedin-square"></i></a>
+  <a class="menu-item icon" href="mailto:me@fbac.dev"><i class="fa fa-envelope-square"></i></a>
+  <hr>
+</nav>
+
+  <main>
+    <h1>bpf/ebpf</h1>
+<h3>bpftrace</h3>
+<ul>
+<li>docs</li>
+</ul>
+<p><a href="https://github.com/iovisor/bpftrace">https://github.com/iovisor/bpftrace</a>
+<a href="https://github.com/iovisor/bpftrace/blob/master/docs/reference_guide.md">https://github.com/iovisor/bpftrace/blob/master/docs/reference_guide.md</a>
+<a href="http://www.brendangregg.com/BPF/bpftrace-cheat-sheet.html">http://www.brendangregg.com/BPF/bpftrace-cheat-sheet.html</a>
+<a href="http://www.brendangregg.com/bpf-performance-tools-book.html">http://www.brendangregg.com/bpf-performance-tools-book.html</a></p>
+<ul>
+<li>articles</li>
+</ul>
+<p><a href="https://lwn.net/Articles/793749/">https://lwn.net/Articles/793749/</a>
+<a href="https://fedoramagazine.org/trace-code-in-fedora-with-bpftrace/">https://fedoramagazine.org/trace-code-in-fedora-with-bpftrace/</a></p>
+<ul>
+<li><strong>Probe points</strong></li>
+</ul>
+<pre style="background-color:#2b303b;">
+<span style="color:#c0c5ce;">kprobe – kernel function start
+</span><span style="color:#c0c5ce;">kretprobe – kernel function return
+</span><span style="color:#c0c5ce;">uprobe – user-level function start
+</span><span style="color:#c0c5ce;">uretprobe – user-level function return
+</span><span style="color:#c0c5ce;">tracepoint – kernel static tracepoints
+</span><span style="color:#c0c5ce;">usdt – user-level static tracepoints
+</span><span style="color:#c0c5ce;">profile – timed sampling
+</span><span style="color:#c0c5ce;">interval – timed output
+</span><span style="color:#c0c5ce;">software – kernel software events
+</span><span style="color:#c0c5ce;">hardware – processor-level events
+</span></pre>
+<ul>
+<li><strong>List kprobe/kretprobe, tracepoints, software and hardware probes</strong></li>
+</ul>
+<pre style="background-color:#2b303b;">
+<span style="color:#8fa1b3;">bpftrace</span><span style="color:#bf616a;"> -l
+</span></pre>
+<ul>
+<li><strong>List available fields in a tracepoint</strong></li>
+</ul>
+<pre style="background-color:#2b303b;">
+<span style="color:#8fa1b3;">bpftrace</span><span style="color:#bf616a;"> -lv </span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">t:syscalls:sys_enter_execve</span><span style="color:#c0c5ce;">&quot;
+</span></pre>
+<ul>
+<li>The <strong>uprobe/uretprobe</strong> and usdt probes are userspace probes specific to a given executable.</li>
+</ul>
+<p>List probes for an executable</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#8fa1b3;">bpftrace</span><span style="color:#bf616a;"> -l </span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">uprobe:/bin/bash</span><span style="color:#c0c5ce;">&quot;
+</span></pre>
+<p>Example to show the return values of readline</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#8fa1b3;">bpftrace</span><span style="color:#bf616a;"> -e </span><span style="color:#c0c5ce;">&#39;</span><span style="color:#a3be8c;">uretprobe:/bin/bash:readline { printf(&quot;readline: \&quot;%s\&quot;\n&quot;, str(retval)); }</span><span style="color:#c0c5ce;">&#39;
+</span></pre>
+<p>A str() call is necessary to turn the char * pointer to a string.</p>
+<ul>
+<li>
+<p>The <strong>profile and interval probes</strong> fire at fixed time intervals.</p>
+</li>
+<li>
+<p><strong>Example</strong>: show the parent process (comm) and processes executed by it</p>
+</li>
+</ul>
+<pre style="background-color:#2b303b;">
+<span style="color:#8fa1b3;">bpftrace</span><span style="color:#bf616a;"> -e </span><span style="color:#c0c5ce;">&#39;</span><span style="color:#a3be8c;">t:syscalls:sys_enter_execve { printf(&quot;%s called %s\n&quot;, comm, str(args-&gt;filename)); }</span><span style="color:#c0c5ce;">&#39;
+</span></pre>
+<ul>
+<li><strong>Count system calls</strong> using maps</li>
+</ul>
+<p>Some probes allow wildcards.</p>
+<p>In this example, the action block attaches to all tracepoints whose name starts with t:syscalls:sys_enter_, which means all available syscalls.</p>
+<p>The bpftrace builtin function count() counts the number of times this function is called. <strong>@[] represents a map</strong> (an associative array). The key of this map is <strong>probe, which is another bpftrace builtin that represents the full probe name.</strong></p>
+<pre style="background-color:#2b303b;">
+<span style="color:#8fa1b3;">bpftrace</span><span style="color:#bf616a;"> -e </span><span style="color:#c0c5ce;">&#39;</span><span style="color:#a3be8c;">t:syscalls:sys_enter_* { @[probe] = count(); }</span><span style="color:#c0c5ce;">&#39;
+</span><span style="color:#8fa1b3;">bpftrace</span><span style="color:#bf616a;"> -e </span><span style="color:#c0c5ce;">&#39;</span><span style="color:#a3be8c;">t:syscalls:sys_enter_* / pid == 1234 / { @[probe] = count(); }</span><span style="color:#c0c5ce;">&#39;
+</span></pre>
+<h4>examples</h4>
+<ul>
+<li>Write bytes by process</li>
+</ul>
+<pre style="background-color:#2b303b;">
+<span style="color:#8fa1b3;">bpftrace</span><span style="color:#bf616a;"> -e </span><span style="color:#c0c5ce;">&#39;</span><span style="color:#a3be8c;">t:syscalls:sys_exit_write /args-&gt;ret &gt; 0/ { @[comm] = sum(args-&gt;ret); }</span><span style="color:#c0c5ce;">&#39;
+</span></pre>
+<p>it uses a filter to discard the negative values, which are error codes (/args-&gt;ret &gt; 0/)
+comm represents the process name that called the syscall.
+sum() builtin function accumulates the number of bytes written for each map entry or process.
+the write syscall returns the number of written bytes. args-&gt;ret provides access to the bytes.</p>
+<ul>
+<li>Read size distribution by process (histogram)</li>
+</ul>
+<pre style="background-color:#2b303b;">
+<span style="color:#8fa1b3;">bpftrace</span><span style="color:#bf616a;"> -e </span><span style="color:#c0c5ce;">&#39;</span><span style="color:#a3be8c;">t:syscalls:sys_exit_read { @[comm] = hist(args-&gt;ret); }</span><span style="color:#c0c5ce;">&#39;
+</span></pre>
+<p>Histograms are BPF maps, so they must always be attributed to a map (@). In this example, the map key is comm.
+To generate just one global histogram, attribute the hist() function just to ‘@’ (without any key).</p>
+<ul>
+<li>watch tcp_sendmsg size for ten seconds, and watch tcp_sendmsg errors</li>
+</ul>
+<p><code>net/ipv4/tcp.c</code>: int tcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t size);</p>
+<p>This is using a kprobe (&quot;k&quot;) on tcp_sendmsg(), and saving a histogram of arg2 (size)</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#8fa1b3;">bpftrace</span><span style="color:#bf616a;"> -e </span><span style="color:#c0c5ce;">&#39;</span><span style="color:#a3be8c;">k:tcp_sendmsg { @size = hist(arg2); } interval:s:10 { exit(); }</span><span style="color:#c0c5ce;">&#39;
+</span></pre>
+<p>Using a kretprobe (&quot;kr&quot;), and I'm frequency counting retval, which is either a negative error code or the size. It don't care about the size, so use a ternary operator to set all positive values to zero.</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#8fa1b3;">bpftrace</span><span style="color:#bf616a;"> -e </span><span style="color:#c0c5ce;">&#39;</span><span style="color:#a3be8c;">kr:tcp_sendmsg { @retvals[retval &gt; 0 ? 0 : retval] = count(); }
+</span><span style="color:#a3be8c;">        interval:s:10 { exit(); }</span><span style="color:#c0c5ce;">&#39;
+</span></pre>
+<h4>shipped scripts in bpftrace</h4>
+<pre style="background-color:#2b303b;">
+<span style="color:#c0c5ce;">    </span><span style="color:#8fa1b3;">killsnoop.bt</span><span style="color:#c0c5ce;"> – Trace signals issued by the kill() </span><span style="color:#8fa1b3;">syscall.
+</span><span style="color:#c0c5ce;">    </span><span style="color:#8fa1b3;">tcpconnect.bt</span><span style="color:#c0c5ce;"> – Trace all TCP network connections.
+</span><span style="color:#c0c5ce;">    </span><span style="color:#8fa1b3;">pidpersec.bt</span><span style="color:#c0c5ce;"> – Count new procesess (via fork) </span><span style="color:#8fa1b3;">per</span><span style="color:#c0c5ce;"> second.
+</span><span style="color:#c0c5ce;">    </span><span style="color:#8fa1b3;">opensnoop.bt</span><span style="color:#c0c5ce;"> – Trace open() </span><span style="color:#8fa1b3;">syscalls.
+</span><span style="color:#c0c5ce;">    </span><span style="color:#8fa1b3;">vfsstat.bt</span><span style="color:#c0c5ce;"> – Count some VFS calls, with per-second summaries.
+</span></pre>
+  </main>
+  <footer>
+  <hr>
+  <p>
+    <a class="menu-item " href="https://fbac.dev">cd ~</a>
+  </p>
+  <p>
+    <a href="/license/">CC BY-SA 4.0 / MIT</a>
+    -
+    <a href="https://github.com/cobalt-org/cobalt.rs">Built with Cobalt</a>
+  </p>
+  <br>
+</footer>
+
+</body>
+</html>
