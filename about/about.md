@@ -6,8 +6,6 @@ data:
   route: about
 ---
 
-<div>
-
 <h1>/home/fbac/about</h1>
 
 # **`Booting system ...`**
@@ -21,10 +19,6 @@ Your id is: guest
   
 
 ## **`[guest@localhost /]$ su - fbac`**
-
-</div>
-
-<div>
 
 <details>
 
