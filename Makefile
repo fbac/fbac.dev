@@ -10,7 +10,8 @@ clean:
 
 push:
 	git add -A .
-	
+	git commit -m "$(date) publish changes"
+	git push
 
 serve:
 	cobalt serve
