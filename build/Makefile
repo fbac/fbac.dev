@@ -11,7 +11,7 @@ clean:
 push:
 	git add -A .
 	git commit -m "Makefile: publish triggered."
-	git push
+	git push -f
 
 serve:
 	cobalt serve
