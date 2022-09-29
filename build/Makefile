@@ -10,7 +10,7 @@ clean:
 
 push:
 	git add -A .
-	git commit -m "$(date) publish changes"
+	git commit -m "Makefile: publish triggered."
 	git push
 
 serve:
