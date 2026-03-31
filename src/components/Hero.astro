@@ -2,49 +2,56 @@
 import SocialLinks from './SocialLinks.astro';
 ---
 
-<section class="hero">
-  <img src="/img/avatar.png" alt="Borja Aranda Castillejo" class="avatar" />
-  <h1>Borja Aranda Castillejo</h1>
-  <p class="subtitle">Staff Engineer · Distributed Systems · Protocol Engineering</p>
-  <p class="tagline">Building low-level protocols, distributed backends, and production infrastructure.</p>
+<header class="header">
+  <div class="identity">
+    <img src="/img/avatar.png" alt="Borja Aranda" class="avatar" />
+    <div class="info">
+      <h1>Borja Aranda</h1>
+      <p class="subtitle">Staff Engineer · Distributed Systems · Protocol Engineering</p>
+    </div>
+  </div>
   <SocialLinks />
-</section>
+</header>
 
 <style>
-  section.hero {
-    min-height: 80vh;
+  .header {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 2rem 0;
+    justify-content: space-between;
+    padding: 2.5rem 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .identity {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
   }
 
   .avatar {
-    width: 120px;
-    height: 120px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     object-fit: cover;
-    box-shadow: 0 0 20px rgba(74, 222, 128, 0.15);
-    margin-bottom: 1.5rem;
+    box-shadow: 0 0 12px rgba(74, 222, 128, 0.15);
   }
 
   h1 {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
+    font-size: 1.4rem;
+    margin-bottom: 0.15rem;
   }
 
   .subtitle {
     font-family: var(--font-mono);
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: var(--color-text-muted);
-    margin-bottom: 1rem;
   }
 
-  .tagline {
-    color: var(--color-text-dim);
-    max-width: 500px;
-    margin: 0 auto 2rem;
+  @media (max-width: 600px) {
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.25rem;
+    }
   }
 </style>
