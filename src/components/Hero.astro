@@ -1,0 +1,50 @@
+---
+import SocialLinks from './SocialLinks.astro';
+---
+
+<section class="hero">
+  <img src="/img/me.jpg" alt="Borja Aranda Castillejo" class="avatar" />
+  <h1>Borja Aranda Castillejo</h1>
+  <p class="subtitle">Staff Engineer · Distributed Systems · Protocol Engineering</p>
+  <p class="tagline">Building low-level protocols, distributed backends, and production infrastructure.</p>
+  <SocialLinks />
+</section>
+
+<style>
+  section.hero {
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem 0;
+  }
+
+  .avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 20px rgba(74, 222, 128, 0.15);
+    margin-bottom: 1.5rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    margin-bottom: 1rem;
+  }
+
+  .tagline {
+    color: var(--color-text-dim);
+    max-width: 500px;
+    margin: 0 auto 2rem;
+  }
+</style>

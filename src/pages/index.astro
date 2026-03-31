@@ -1,10 +1,20 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
 ---
 
 <Layout>
   <main>
-    <h1>fbac.dev</h1>
-    <p>Coming soon.</p>
+    <Hero />
+    <About />
   </main>
+
+  <style>
+    main {
+      max-width: var(--content-max-width);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+  </style>
 </Layout>
