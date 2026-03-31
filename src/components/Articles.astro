@@ -1,0 +1,115 @@
+---
+const articles = [
+  {
+    title: 'How to write eBPF programs with Golang',
+    url: 'https://blog.devgenius.io/how-to-write-ebpf-programs-with-golang-933d58fc5dba',
+    date: 'Sep 2022',
+    description: 'Making sense of eBPF, BTF, bpf2go and Golang.',
+  },
+  {
+    title: 'You can write a ZKProof too!',
+    url: 'https://blog.fbac.dev/you-can-write-a-zkproof-too-4de7ddf83540',
+    date: 'Feb 2024',
+    description: 'Zero-knowledge proofs demystified with a practical implementation.',
+  },
+];
+---
+
+<section class="articles">
+  <h2><span class="prefix">// </span>Articles</h2>
+  <ul>
+    {articles.map((article) => (
+      <li>
+        <a href={article.url} target="_blank" rel="noopener noreferrer">
+          <span class="title">{article.title}</span>
+          <span class="meta">
+            <span class="date">{article.date}</span>
+            <span class="desc">{article.description}</span>
+          </span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  section.articles {
+    padding: var(--section-gap) 0;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .prefix {
+    color: var(--color-accent);
+    opacity: 0.7;
+  }
+
+  ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  li a {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 1rem 1.25rem;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    color: inherit;
+    transition: background var(--transition-fast);
+  }
+
+  li a:hover {
+    background: var(--color-bg-card-hover);
+    opacity: 1;
+  }
+
+  .title {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--color-accent);
+    flex-shrink: 0;
+  }
+
+  .meta {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    text-align: right;
+  }
+
+  .date {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--color-text-dim);
+    white-space: nowrap;
+  }
+
+  .desc {
+    font-size: 0.8rem;
+    color: var(--color-text-dim);
+    display: none;
+  }
+
+  @media (max-width: 600px) {
+    li a {
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .meta {
+      text-align: left;
+    }
+
+    .desc {
+      display: inline;
+    }
+  }
+</style>
