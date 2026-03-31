@@ -1,0 +1,129 @@
+---
+const experience = [
+  {
+    company: 'XMTP Labs',
+    role: 'Staff Software Engineer',
+    period: 'Dec 2024 – Present',
+    description: 'Decentralized messaging protocol — backend nodes, on-chain settlement, cross-chain indexing, infrastructure.',
+  },
+  {
+    company: 'ZetaChain',
+    role: 'Software Engineer, Blockchain Protocol',
+    period: 'Jul 2024 – Dec 2024',
+    description: 'L1 omnichain blockchain on Cosmos SDK — protocol contracts v2, consensus-critical code.',
+  },
+  {
+    company: 'Chainlink Labs',
+    role: 'Senior Software Engineer',
+    period: 'Dec 2022 – Jul 2024',
+    description: 'Oracle network infrastructure — off-chain decentralization services, cross-chain tooling.',
+  },
+  {
+    company: 'Red Hat',
+    role: 'Principal Software Engineer',
+    period: '2016 – 2022',
+    description: 'OpenShift/Kubernetes SDN, Machine-Config Operator, eBPF networking tools, kernel internals.',
+  },
+  {
+    company: 'Earlier Roles',
+    role: '',
+    period: '2008 – 2016',
+    description: 'Systems engineering foundations — Linux, networking, infrastructure.',
+  },
+];
+---
+
+<section class="experience">
+  <h2><span class="prefix">// </span>Experience</h2>
+  <div class="timeline">
+    {experience.map((entry) => (
+      <div class="entry">
+        <div class="dot"></div>
+        <div class="content">
+          <div class="header">
+            <h3>{entry.company}</h3>
+            <span class="period">{entry.period}</span>
+          </div>
+          {entry.role && <p class="role">{entry.role}</p>}
+          <p class="desc">{entry.description}</p>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .experience {
+    padding: var(--section-gap) 0;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .prefix {
+    color: var(--color-accent);
+    opacity: 0.7;
+  }
+
+  .timeline {
+    border-left: 2px solid var(--color-border);
+    padding-left: 1.5rem;
+    margin-left: 0.5rem;
+  }
+
+  .entry {
+    position: relative;
+    margin-bottom: 2rem;
+  }
+
+  .entry:last-child {
+    margin-bottom: 0;
+  }
+
+  .dot {
+    position: absolute;
+    left: -1.5rem;
+    top: 0.5rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    transform: translateX(-50%);
+    margin-left: -1px;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  h3 {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: var(--color-text);
+  }
+
+  .period {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--color-text-dim);
+  }
+
+  .role {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin-top: 0.25rem;
+  }
+
+  .desc {
+    font-size: 0.875rem;
+    color: var(--color-text-dim);
+    margin-top: 0.5rem;
+    line-height: 1.5;
+  }
+</style>
