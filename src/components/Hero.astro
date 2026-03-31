@@ -2,58 +2,81 @@
 import SocialLinks from './SocialLinks.astro';
 ---
 
-<header class="header">
-  <div class="identity">
-    <img src="/img/avatar.png" alt="Borja Aranda" class="avatar" />
-    <div class="info">
-      <h1>Borja Aranda</h1>
-      <p class="subtitle">Staff Engineer</p>
-      <p class="subtitle">Distributed Systems</p>
-      <p class="subtitle">Protocol Engineering</p>
-    </div>
-  </div>
+<section class="hero">
+  <img src="/img/avatar.png" alt="Borja Aranda" class="avatar" />
+  <h1>Borja Aranda</h1>
+  <p class="role">Staff Engineer</p>
+  <hr class="divider" />
+  <p class="focus">Distributed Systems · Protocol Engineering · Infrastructure</p>
+  <p class="summary">15+ years building low-level protocols, distributed backends, and production infrastructure — from Linux kernel and Kubernetes at Red Hat to decentralized protocol architectures at XMTP, Chainlink, and ZetaChain.</p>
   <SocialLinks />
-</header>
+</section>
 
 <style>
-  .header {
+  .hero {
+    min-height: 100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    padding: 2.5rem 0;
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .identity {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem 1rem;
   }
 
   .avatar {
-    width: 120px;
-    height: 120px;
+    width: 140px;
+    height: 140px;
     border-radius: 50%;
     object-fit: cover;
-    box-shadow: 0 0 12px rgba(146, 64, 14, 0.1);
+    margin-bottom: 2rem;
   }
 
   h1 {
-    font-size: 1.4rem;
-    margin-bottom: 0.15rem;
+    font-size: 2.5rem;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.25rem;
   }
 
-  .subtitle {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
+  .role {
+    font-family: var(--font-sans);
+    font-size: 1.1rem;
+    font-weight: 500;
     color: var(--color-text-muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  .divider {
+    width: 3rem;
+    border: none;
+    border-top: 2px solid var(--color-accent);
+    margin-bottom: 1.5rem;
+  }
+
+  .focus {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.01em;
+  }
+
+  .summary {
+    max-width: 520px;
+    font-size: 0.95rem;
+    color: var(--color-text-dim);
+    line-height: 1.7;
+    margin-bottom: 2rem;
   }
 
   @media (max-width: 600px) {
-    .header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 1.25rem;
+    h1 {
+      font-size: 2rem;
+    }
+
+    .summary {
+      max-width: 100%;
     }
   }
 </style>
