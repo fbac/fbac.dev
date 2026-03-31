@@ -1,13 +1,13 @@
 :root {
-  --color-bg: #0f172a;
-  --color-bg-card: #1e293b;
-  --color-bg-card-hover: #334155;
-  --color-text: #e2e8f0;
-  --color-text-muted: #94a3b8;
-  --color-text-dim: #64748b;
-  --color-accent: #f97316;
-  --color-accent-dim: rgba(249, 115, 22, 0.12);
-  --color-border: #334155;
+  --color-bg: #1a1a2e;
+  --color-bg-card: #25253e;
+  --color-bg-card-hover: #32324d;
+  --color-text: #eaeaea;
+  --color-text-muted: #a0a0b8;
+  --color-text-dim: #6b6b8a;
+  --color-accent: #e94560;
+  --color-accent-dim: rgba(233, 69, 96, 0.12);
+  --color-border: #32324d;
   --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 
