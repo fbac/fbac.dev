@@ -1,0 +1,40 @@
+---
+import { getCollection } from 'astro:content';
+import { formatList } from '../lib/date';
+
+const posts = (
+  await getCollection('articles', ({ data }) => (import.meta.env.PROD ? !data.draft : true))
+).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<section class="articles">
+  <h2 class="sec-h">Articles</h2>
+  {posts.length === 0 ? (
+    <p class="empty">No articles yet.</p>
+  ) : (
+    <ul class="post-list">
+      {posts.map((p) => (
+        <li>
+          <span class="pdate">{formatList(p.data.date)}</span>
+          <span class="pbody">
+            <a class="ptitle" href={`/articles/${p.id}/`}>{p.data.title}</a>
+            <span class="pdesc">{p.data.description}</span>
+          </span>
+        </li>
+      ))}
+    </ul>
+  )}
+</section>
+
+<style>
+  .sec-h { font-size: 1.1rem; margin: 0 0 0.9rem; color: var(--color-text); }
+  .empty { color: var(--color-text-dim); font-size: 0.9rem; }
+
+  .post-list { list-style: none; display: flex; flex-direction: column; gap: 0.2rem; }
+  .post-list li { display: flex; gap: 1rem; align-items: baseline; padding: 0.55rem 0; }
+
+  .pdate { font-family: var(--font-mono); font-size: 0.8rem; color: var(--color-text-dim); white-space: nowrap; min-width: 4.5rem; }
+  .pbody { display: flex; flex-direction: column; }
+  .ptitle { font-size: 1rem; color: var(--color-accent); }
+  .pdesc { font-size: 0.85rem; color: var(--color-text-dim); }
+</style>
