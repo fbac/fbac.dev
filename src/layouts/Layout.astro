@@ -46,17 +46,19 @@ const ogImage = new URL('/img/avatar.png', Astro.site);
     <link rel="alternate" type="application/rss+xml" title="Borja Aranda — Articles" href="/rss.xml" />
   </head>
   <body>
-    <Header active={active} />
-    <main>
-      <slot />
-    </main>
-    <Footer />
+    <div class="page">
+      <Header active={active} />
+      <main>
+        <slot />
+      </main>
+      <Footer />
+    </div>
 
     <style>
-      main {
+      .page {
         max-width: var(--content-max-width);
         margin: 0 auto;
-        padding: 0 1.5rem;
+        padding: 1.5rem 1.5rem 0;
       }
     </style>
   </body>
