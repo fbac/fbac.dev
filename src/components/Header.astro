@@ -1,0 +1,88 @@
+---
+import SocialLinks from './SocialLinks.astro';
+
+interface Props {
+  active?: 'articles' | 'about';
+}
+const { active } = Astro.props;
+---
+
+<header class="site-header">
+  <a class="brand" href="/" aria-label="Home — Borja Aranda">
+    <span class="sigil" aria-hidden="true">BA</span>
+    <span class="brand-text">
+      <span class="h-name">Borja Aranda</span>
+      <span class="h-tag">Staff Engineer · distributed systems · protocol engineering</span>
+    </span>
+  </a>
+
+  <div class="linkrow">
+    <nav class="nav-text" aria-label="Sections">
+      <a href="/" class={active === 'articles' ? 'active' : ''}>articles</a>
+      <a href="/about" class={active === 'about' ? 'active' : ''}>about</a>
+    </nav>
+    <span class="nav-divider" aria-hidden="true"></span>
+    <SocialLinks />
+  </div>
+</header>
+
+<hr class="header-sep" />
+
+<style>
+  .site-header { padding-top: 0.5rem; }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    color: inherit;
+  }
+  .brand:hover { opacity: 1; }
+
+  .sigil {
+    flex-shrink: 0;
+    width: 72px;
+    height: 72px;
+    border: 1.5px solid var(--color-accent);
+    border-radius: 12px;
+    color: var(--color-accent);
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .brand-text { display: flex; flex-direction: column; justify-content: center; }
+  .h-name { font-size: 1.9rem; font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; color: var(--color-text); }
+  .h-tag { font-family: var(--font-mono); font-size: 0.78rem; color: var(--color-text-muted); margin-top: 0.3rem; }
+
+  .linkrow {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 1.1rem;
+    margin-top: 1.75rem;
+  }
+
+  .nav-text { display: flex; gap: 1.1rem; font-size: 0.95rem; }
+  .nav-text a { color: var(--color-text-muted); }
+  .nav-text a:hover { color: var(--color-accent); opacity: 1; }
+  .nav-text a.active { color: var(--color-text); border-bottom: 2px solid var(--color-accent); padding-bottom: 1px; }
+
+  .nav-divider { width: 1px; height: 18px; background: var(--color-border); }
+
+  .header-sep {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: 1.5rem 0 1.9rem;
+  }
+
+  @media (max-width: 560px) {
+    .linkrow { justify-content: flex-start; }
+    .sigil { width: 60px; height: 60px; font-size: 1.3rem; }
+    .h-name { font-size: 1.6rem; }
+  }
+</style>
