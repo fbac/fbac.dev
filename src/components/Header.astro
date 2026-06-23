@@ -24,12 +24,16 @@ const { active } = Astro.props;
     <span class="nav-divider" aria-hidden="true"></span>
     <SocialLinks />
   </div>
+
+  <hr class="header-sep" />
 </header>
 
-<hr class="header-sep" />
-
 <style>
-  .site-header { padding-top: 0.5rem; }
+  .site-header {
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    padding: 0.5rem 1.5rem 0;
+  }
 
   .brand {
     display: flex;
