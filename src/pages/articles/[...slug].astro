@@ -1,0 +1,24 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { formatLong } from '../../lib/date';
+import '../../styles/prose.css';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('articles', ({ data }) =>
+    import.meta.env.PROD ? !data.draft : true
+  );
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<Layout active="articles" title={`${post.data.title} — Borja Aranda`} description={post.data.description}>
+  <article class="prose">
+    <h1>{post.data.title}</h1>
+    <p class="post-date">{formatLong(post.data.date)}</p>
+    <Content />
+  </article>
+</Layout>
