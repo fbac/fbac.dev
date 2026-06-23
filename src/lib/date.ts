@@ -1,7 +1,7 @@
-/** Compact, zero-padded `YYYY-MM` for the article index. UTC-based to avoid
- *  timezone rollover (a `-01` date can become the prior month in negative TZs). */
+/** Compact, zero-padded `YYYY-MM-DD` for the article index. UTC-based to avoid
+ *  timezone rollover (a date can shift a day in negative TZs). */
 export function formatList(d: Date): string {
-  return d.toISOString().slice(0, 7);
+  return d.toISOString().slice(0, 10);
 }
 
 const longFmt = new Intl.DateTimeFormat('en', { dateStyle: 'long', timeZone: 'UTC' });

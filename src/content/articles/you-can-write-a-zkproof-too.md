@@ -1,6 +1,6 @@
 ---
 title: "You can write a ZKProof too!"
-date: 2024-02-01
+date: 2024-02-09
 description: "Zero-knowledge proofs demystified with a practical implementation."
 draft: false
 ---

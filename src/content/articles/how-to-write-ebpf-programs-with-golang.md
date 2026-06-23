@@ -1,6 +1,6 @@
 ---
 title: "How to write eBPF programs with Golang"
-date: 2022-09-01
+date: 2022-09-22
 description: "Making sense of eBPF, BTF, bpf2go and Golang."
 draft: false
 ---
