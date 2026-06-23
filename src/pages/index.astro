@@ -1,20 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Hero from '../components/Hero.astro';
-import Footer from '../components/Footer.astro';
+import ArticleList from '../components/ArticleList.astro';
 ---
 
-<Layout>
-  <main>
-    <Hero />
-    <Footer />
-  </main>
-
-  <style>
-    main {
-      max-width: var(--content-max-width);
-      margin: 0 auto;
-      padding: 0 1.5rem;
-    }
-  </style>
+<Layout active="articles">
+  <ArticleList />
 </Layout>
