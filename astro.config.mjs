@@ -5,4 +5,7 @@ export default defineConfig({
   site: 'https://fbac.dev',
   output: 'static',
   integrations: [sitemap()],
+  markdown: {
+    shikiConfig: { theme: 'github-dark-default', wrap: true },
+  },
 });
