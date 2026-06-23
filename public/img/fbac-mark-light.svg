@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="240" height="240" role="img" aria-label="fbac.dev">
+  <g fill="none" stroke="#e2e8f0" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M77 37 Q60 37 60 53 L60 93"></path>
+    <path d="M46 59 L78 59"></path>
+  </g>
+  <g fill="#e2e8f0">
+    <circle cx="77" cy="37" r="6.4"></circle>
+    <circle cx="78" cy="59" r="6.4"></circle>
+    <circle cx="60" cy="93" r="6.4"></circle>
+  </g>
+</svg>

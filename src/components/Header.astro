@@ -9,7 +9,18 @@ const { active } = Astro.props;
 
 <header class="site-header">
   <a class="brand" href="/" aria-label="Home — Borja Aranda">
-    <span class="sigil" aria-hidden="true">BA</span>
+    <svg class="sigil-mark" width="64" height="64" viewBox="0 0 120 120" aria-hidden="true">
+      <g fill="none" stroke="#e2e8f0" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.22">
+        <path d="M77 37 Q60 37 60 53 L60 93" />
+        <path d="M46 59 L78 59" />
+      </g>
+      <path class="fbac-pulse" d="M77 37 Q60 37 60 53 L60 93" pathLength="100" fill="none" stroke="#f97316" stroke-width="7.5" stroke-linecap="round" />
+      <g fill="#e2e8f0">
+        <circle cx="77" cy="37" r="6.4" />
+        <circle cx="78" cy="59" r="6.4" />
+        <circle cx="60" cy="93" r="6.4" />
+      </g>
+    </svg>
     <span class="brand-text">
       <span class="h-name">Borja Aranda</span>
       <span class="h-tag">Staff Engineer · distributed systems · protocol engineering</span>
@@ -41,19 +52,29 @@ const { active } = Astro.props;
   }
   .brand:hover { opacity: 1; }
 
-  .sigil {
+  .sigil-mark {
     flex-shrink: 0;
-    width: 72px;
-    height: 72px;
-    border: 1.5px solid var(--color-accent);
-    border-radius: 12px;
-    color: var(--color-accent);
-    font-family: var(--font-mono);
-    font-weight: 700;
-    font-size: 1.5rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    width: 64px;
+    height: 64px;
+    display: block;
+  }
+
+  .fbac-pulse {
+    stroke-dasharray: 16 84;
+    animation: fbac-trace 2.4s linear infinite;
+    filter: drop-shadow(0 0 4px #f97316);
+  }
+
+  @keyframes fbac-trace {
+    from { stroke-dashoffset: 0; }
+    to { stroke-dashoffset: -100; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fbac-pulse {
+      animation: none;
+      stroke-dasharray: none;
+    }
   }
 
   .brand-text { display: flex; flex-direction: column; justify-content: center; }
@@ -84,7 +105,7 @@ const { active } = Astro.props;
 
   @media (max-width: 560px) {
     .linkrow { justify-content: flex-start; }
-    .sigil { width: 60px; height: 60px; font-size: 1.3rem; }
+    .sigil-mark { width: 54px; height: 54px; }
     .h-name { font-size: 1.6rem; }
   }
 </style>

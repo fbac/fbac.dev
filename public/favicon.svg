@@ -1,3 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <text x="4" y="26" font-family="sans-serif" font-size="28" font-weight="bold" fill="#f97316">B</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="22 24 80 80" role="img" aria-label="fbac.dev">
+  <style>
+    .m { stroke: #0f172a; }
+    .d { fill: #0f172a; }
+    @media (prefers-color-scheme: dark) {
+      .m { stroke: #e2e8f0; }
+      .d { fill: #e2e8f0; }
+    }
+  </style>
+  <g class="m" fill="none" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M77 37 Q60 37 60 53 L60 93" />
+    <path d="M46 59 L78 59" />
+  </g>
+  <g class="d">
+    <circle cx="77" cy="37" r="6.4" />
+    <circle cx="78" cy="59" r="6.4" />
+    <circle cx="60" cy="93" r="6.4" />
+  </g>
 </svg>
